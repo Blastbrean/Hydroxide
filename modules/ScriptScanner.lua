@@ -2,35 +2,38 @@ local ScriptScanner = {}
 local LocalScript = import("objects/LocalScript")
 
 local requiredMethods = {
-    ["getGc"] = true,
-    ["getSenv"] = true,
-    ["getProtos"] = true,
-    ["getConstants"] = true,
-    ["getScriptClosure"] = true,
-    ["isXClosure"] = true
+	["getGc"] = true,
+	["getSenv"] = true,
+	["getProtos"] = true,
+	["getConstants"] = true,
+	["getScriptClosure"] = true,
+	["isXClosure"] = true,
 }
 
 local function scan(query)
-    local scripts = {}
-    query = query or ""
+	local scripts = {}
+	query = query or ""
 
-    for _i, v in pairs(getGc()) do
-        if type(v) == "function" and not isXClosure(v) then
-            local script = rawget(getfenv(v), "script")
+	for _i, v in pairs(getGc()) do
+		if type(v) == "function" and not isXClosure(v) then
+			local script = rawget(getfenv(v), "script")
+			local closureSuccess, scriptClosure = pcall(getScriptClosure, script)
+			local scriptEnvSuccess, scriptEnv = pcall(getsenv, script)
 
-            if typeof(script) == "Instance" and 
-                not scripts[script] and 
-                script:IsA("LocalScript") and 
-                script.Name:lower():find(query) and
-                getScriptClosure(script) and
-                pcall(function() getsenv(script) end)
-            then
-                scripts[script] = LocalScript.new(script)
-            end
-        end
-    end
+			if
+				typeof(script) == "Instance"
+				and not scripts[script]
+				and script:IsA("LocalScript")
+				and script.Name:lower():find(query)
+				and closureSuccess
+				and scriptEnvSuccess
+			then
+				scripts[script] = LocalScript.new(script, scriptClosure, scriptEnv)
+			end
+		end
+	end
 
-    return scripts
+	return scripts
 end
 
 ScriptScanner.RequiredMethods = requiredMethods

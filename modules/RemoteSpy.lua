@@ -51,7 +51,7 @@ end
 local nmcTrampoline
 nmcTrampoline = hookMetaMethod(game, "__namecall", function(...)
     local instance = ...
-    
+
     if typeof(instance) ~= "Instance" then
         return nmcTrampoline(...)
     end
@@ -63,11 +63,11 @@ nmcTrampoline = hookMetaMethod(game, "__namecall", function(...)
     elseif method == "invokeServer" then
         method = "InvokeServer"
     end
-        
+
     if remotesViewing[instance.ClassName] and instance ~= remoteDataEvent and remoteMethods[method] then
         local remote = currentRemotes[instance]
         local vargs = {select(2, ...)}
-            
+
         if not remote then
             remote = Remote.new(instance)
             currentRemotes[instance] = remote
@@ -113,7 +113,7 @@ for _name, hook in pairs(methodHooks) do
         if typeof(instance) ~= "Instance" then
             return originalMethod(...)
         end
-                
+
         do
             local success = pcall(checkPermission, instance)
             if (not success) then return originalMethod(...) end
@@ -128,17 +128,17 @@ for _name, hook in pairs(methodHooks) do
                 currentRemotes[instance] = remote
             end
 
-            local remoteIgnored = remote.Ignored 
+            local remoteIgnored = remote.Ignored
             local argsIgnored = remote:AreArgsIgnored(vargs)
-            
+
             if eventSet and (not remoteIgnored and not argsIgnored) then
                 local call = {
                     script = getCallingScript((PROTOSMASHER_LOADED ~= nil and 2) or nil),
                     args = vargs,
                     func = getInfo(3).func
                 }
-    
-                remote:IncrementCalls(call)
+
+                remote.IncrementCalls(remote, call)
                 remoteDataEvent:Fire(instance, call)
             end
 
@@ -146,7 +146,7 @@ for _name, hook in pairs(methodHooks) do
                 return
             end
         end
-        
+
         return originalMethod(...)
     end))
 

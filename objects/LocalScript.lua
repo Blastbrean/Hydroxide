@@ -1,13 +1,12 @@
 local LocalScript = {}
 
-function LocalScript.new(instance)
+function LocalScript.new(instance, scriptClosure, scriptEnv)
     local localScript = {}
-    local closure = getScriptClosure(instance)
 
     localScript.Instance = instance
-    localScript.Environment = getSenv(instance)
-    localScript.Constants = getConstants(closure)
-    localScript.Protos = getProtos(closure)
+    localScript.Environment = scriptEnv
+    localScript.Constants = getConstants(scriptClosure)
+    localScript.Protos = getProtos(scriptClosure)
 
     return localScript
 end
