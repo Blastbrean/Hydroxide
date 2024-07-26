@@ -32,9 +32,8 @@ end, function(err)
 	else
 		message = "Report this error in Hydroxide's server:\n\n" .. err
 	end
-
+	print(debug.traceback())
 	MessageBox.Show("An error has occurred", message, MessageType.OK, function()
-		print("Traceback", err, debug.traceback())
 		Interface:Destroy()
 	end)
 end)
