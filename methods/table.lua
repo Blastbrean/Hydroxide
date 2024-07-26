@@ -21,7 +21,7 @@ local function tableToString(data, root, indents)
         local indent = ('\t'):rep(indents)
         
         for i,v in pairs(data) do
-            if i ~= root and v ~= root then
+            if not rawequal(i, root) and not rawequal(v, root) then
                 head = head .. ("%s[%s] = %s,\n"):format(indent, tableToString(i, root, indents + 1), tableToString(v, root, indents + 1))
             else
                 head = head .. ("%sOH_CYCLIC_PROTECTION,\n"):format(indent)
